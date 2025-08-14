@@ -1,0 +1,274 @@
+# Copyright 2020 Nokia
+# Licensed under the BSD 3-Clause License.
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: st # short for streaming telemetry ;)
+prefix: ""
+
+mgmt:
+  network: st
+  ipv4-subnet: 172.80.80.0/24
+
+topology:
+  defaults:
+    kind: nokia_srlinux
+
+  kinds:
+    nokia_srlinux:
+      image: ghcr.io/nokia/srlinux:24.10.1
+      type: ixr-d2l
+    linux:
+      image: ghcr.io/srl-labs/network-multitool
+
+  nodes:
+    ### SPINES ###
+    spine1:
+      type: ixr-d3l
+      group: spine
+      startup-config: configs/fabric/spine1.cfg
+      mgmt-ipv4: 172.80.80.21
+      ports:
+        - 1021:22
+      labels:
+        graph-posX: "-7"
+        graph-posY: "35"
+        graph-geoCoordinateLat: "49.573830401401182"
+        graph-geoCoordinateLng: "9.760224762934271"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+    spine2:
+      type: ixr-d3l
+      group: spine
+      startup-config: configs/fabric/spine2.cfg
+      mgmt-ipv4: 172.80.80.22
+      ports:
+        - 1022:22
+      labels:
+        graph-posX: "63"
+        graph-posY: "35"
+        graph-geoCoordinateLat: "48.693011828357442"
+        graph-geoCoordinateLng: "9.430310661095071"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+    ### LEAFS ###
+    leaf1:
+      startup-config: configs/fabric/leaf1.cfg
+      mgmt-ipv4: 172.80.80.11
+      group: leaf
+      ports:
+        - 1011:22
+      labels:
+        graph-posX: "-49"
+        graph-posY: "119"
+        graph-geoCoordinateLat: "49.167509707181416"
+        graph-geoCoordinateLng: "9.025902556940370"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+    leaf2:
+      startup-config: configs/fabric/leaf2.cfg
+      mgmt-ipv4: 172.80.80.12
+      group: leaf
+      ports:
+        - 1012:22
+      labels:
+        graph-posX: "21"
+        graph-posY: "119"
+        graph-geoCoordinateLat: "49.547741859029962"
+        graph-geoCoordinateLng: "9.051862695951726"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+    leaf3:
+      startup-config: configs/fabric/leaf3.cfg
+      mgmt-ipv4: 172.80.80.13
+      group: leaf
+      ports:
+        - 1013:22
+      labels:
+        graph-posX: "91"
+        graph-posY: "119"
+        graph-geoCoordinateLat: "49.308426460005528"
+        graph-geoCoordinateLng: "9.064965468428225"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+    ### CLIENTS ###
+    client1:
+      kind: linux
+      mgmt-ipv4: 172.80.80.31
+      exec:
+        - ip link add link eth1 name eth1.10 type vlan id 10
+        - ip link add link eth1 name eth1.11 type vlan id 11
+        - ip link set eth1.10 up
+        - ip link set eth1.11 up
+        - ip address add 10.1.1.10/24 dev eth1.11
+        - ip address add 172.17.0.1/24 dev eth1.10
+        - ip -6 address add 2002::172:17:0:1/96 dev eth1.10
+        - iperf3 -s -p 5201 -D > iperf3_1.log
+        - iperf3 -s -p 5202 -D > iperf3_2.log
+        - ip route add 10.0.0.0/8 via 10.1.1.254 dev eth1.11
+      group: server
+      image: ghcr.io/srl-labs/network-multitool
+      labels:
+        graph-posX: "-49"
+        graph-posY: "203"
+        graph-geoCoordinateLat: "49.463334566498702"
+        graph-geoCoordinateLng: "9.886361136654044"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+    client2:
+      kind: linux
+      mgmt-ipv4: 172.80.80.32
+      binds:
+        - configs/client2:/config
+      exec:
+        - ip link add link eth1 name eth1.10 type vlan id 10
+        - ip link add link eth1 name eth1.12 type vlan id 12
+        - ip link set eth1.10 up
+        - ip link set eth1.12 up
+        - ip address add 10.2.2.20/24 dev eth1.12
+        - ip address add 172.17.0.2/24 dev eth1.10
+        - ip -6 address add 2002::172:17:0:2/96 dev eth1.10
+        - ip route add 10.0.0.0/8 via 10.2.2.254 dev eth1.12
+      group: server
+      image: ghcr.io/srl-labs/network-multitool
+      labels:
+        graph-posX: "21"
+        graph-posY: "203"
+        graph-geoCoordinateLat: "49.536078044050470"
+        graph-geoCoordinateLng: "9.676786682118907"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+    client3:
+      kind: linux
+      mgmt-ipv4: 172.80.80.33
+      binds:
+        - configs/client3:/config
+      exec:
+        - ip link add link eth1 name eth1.10 type vlan id 10
+        - ip link add link eth1 name eth1.13 type vlan id 13
+        - ip link set eth1.10 up
+        - ip link set eth1.13 up
+        - ip address add 10.3.3.30/24 dev eth1.13
+        - ip address add 172.17.0.3/24 dev eth1.10
+        - ip -6 address add 2002::172:17:0:3/96 dev eth1.10
+        - ip route add 10.0.0.0/8 via 10.3.3.254 dev eth1.13
+      group: server
+      image: ghcr.io/srl-labs/network-multitool
+      labels:
+        graph-posX: "91"
+        graph-posY: "203"
+        graph-geoCoordinateLat: "49.384812582137407"
+        graph-geoCoordinateLng: "9.147772523097901"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+    ### TELEMETRY STACK ###
+    gnmic:
+      kind: linux
+      mgmt-ipv4: 172.80.80.41
+      image: ghcr.io/openconfig/gnmic:0.39.1
+      binds:
+        - configs/gnmic/gnmic-config.yml:/gnmic-config.yml:ro
+      cmd: --config /gnmic-config.yml --log subscribe
+      group: "10"
+      labels:
+        graph-posX: "21"
+        graph-posY: "-63"
+        graph-geoCoordinateLat: "48.722303669333854"
+        graph-geoCoordinateLng: "9.026593837530950"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+    prometheus:
+      kind: linux
+      mgmt-ipv4: 172.80.80.42
+      image: quay.io/prometheus/prometheus:v2.54.1
+      binds:
+        - configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      cmd: --config.file=/etc/prometheus/prometheus.yml
+      ports:
+        - 9090:9090
+      group: "10"
+      labels:
+        graph-posX: "-35"
+        graph-posY: "-63"
+        graph-geoCoordinateLat: "49.201013680363843"
+        graph-geoCoordinateLng: "9.413590758050526"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+    grafana:
+      kind: linux
+      mgmt-ipv4: 172.80.80.43
+      image: grafana/grafana:11.2.0
+      binds:
+        - configs/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+        - configs/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+        - configs/grafana/dashboards:/var/lib/grafana/dashboards
+      ports:
+        - 3000:3000
+      env:
+        GF_INSTALL_PLUGINS: "andrewbmchugh-flow-panel"
+        # env vars to enable anonymous access
+        HTTPS_PROXY: "http://inban1b-proxy.apac.nsn-net.net:8080"
+        HTTP_PROXY: "http://inban1b-proxy.apac.nsn-net.net:8080"
+        GF_ORG_ROLE: "Admin"
+        GF_ORG_NAME: "Main Org"
+        GF_AUTH_ANONYMOUS_ENABLED: "true"
+        GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+        GF_AUTH_ANONYMOUS: "true"
+        GF_AUTH_OAUTH_AUTO_LOGIN: "true"
+      group: "10"
+      labels:
+        graph-posX: "77"
+        graph-posY: "-63"
+        graph-geoCoordinateLat: "48.849063997557053"
+        graph-geoCoordinateLng: "9.729011636498559"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+    ### LOGGING STACK ###
+    promtail:
+      kind: linux
+      mgmt-ipv4: 172.80.80.45
+      image: grafana/promtail:3.2.0
+      binds:
+        - configs/promtail:/etc/promtail
+      cmd: --config.file=/etc/promtail/promtail-config.yml
+      ports:
+        - 9080:9080
+      labels:
+        graph-posX: "-7"
+        graph-posY: "-63"
+        graph-geoCoordinateLat: "48.717288582246127"
+        graph-geoCoordinateLng: "9.127951806260070"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+    loki:
+      kind: linux
+      mgmt-ipv4: 172.80.80.46
+      image: grafana/loki:3.2.0
+      binds:
+        - configs/loki:/etc/loki
+      cmd: --config.file=/etc/loki/loki-config.yml
+      ports:
+        - 3100:3100
+      labels:
+        graph-posX: "49"
+        graph-posY: "-63"
+        graph-geoCoordinateLat: "48.690581746690825"
+        graph-geoCoordinateLng: "9.832140880464667"
+        graph-icon: router
+        graph-groupLabelPos: bottom-center
+
+  links:
+    - endpoints: [ spine1:e1-1, leaf1:e1-49 ]
+    - endpoints: [ spine1:e1-2, leaf2:e1-49 ]
+    - endpoints: [ spine1:e1-3, leaf3:e1-49 ]
+    - endpoints: [ spine2:e1-1, leaf1:e1-50 ]
+    - endpoints: [ spine2:e1-2, leaf2:e1-50 ]
+    - endpoints: [ spine2:e1-3, leaf3:e1-50 ]
+    - endpoints: [ leaf1:e1-1, client1:eth1 ]
+    - endpoints: [ leaf2:e1-1, client2:eth1 ]
+    - endpoints: [ leaf3:e1-1, client3:eth1 ]
