@@ -95,6 +95,8 @@ topology:
     client1:
       kind: linux
       mgmt-ipv4: 172.80.80.31
+      binds:
+        - configs/client1:/config
       exec:
         - ip link add link eth1 name eth1.10 type vlan id 10
         - ip link add link eth1 name eth1.11 type vlan id 11
@@ -103,8 +105,6 @@ topology:
         - ip address add 10.1.1.10/24 dev eth1.11
         - ip address add 172.17.0.1/24 dev eth1.10
         - ip -6 address add 2002::172:17:0:1/96 dev eth1.10
-        - iperf3 -s -p 5201 -D > iperf3_1.log
-        - iperf3 -s -p 5202 -D > iperf3_2.log
         - ip route add 10.0.0.0/8 via 10.1.1.254 dev eth1.11
       group: server
       image: ghcr.io/srl-labs/network-multitool
