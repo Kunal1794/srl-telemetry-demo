@@ -38,14 +38,15 @@ ssh admin@spine1
 docker exec -it client1 bash
 ```
 
-## Fabric configuration
+## Fabric Underlay configuration
 
-The DC fabric used in this lab consists of three leaves and two spines interconnected as shown in the diagram.
+The DC fabric used in this lab consists of three leafs and two spines interconnected as shown in the diagram.
 
 <img width="941" height="694" alt="image" src="https://github.com/user-attachments/assets/b39f0d62-cc69-4b01-8d39-9a97831ac51f" />
 
 
-Leaves and spines use Nokia SR Linux IXR-D2 and IXR-D3L chassis respectively. Each network element of this topology is equipped with a [startup configuration file](configs/fabric/) that is applied at the node's startup.
+Leaf switches use Nokia SR Linux IXR-D2L chassis, while Spine switches use IXR-D3L chassis. Point-to-point IP links are configured between the Leafs and Spines, running eBGP for underlay route exchange (Loopback addresses). iBGP EVPN is used for overlay route exchange, with the Spines acting as Route Reflectors and the Leafs as RR clients.
+Each network element of this topology is equipped with a [startup configuration file](configs/fabric/) that is applied at the node's startup.
 
 Once booted, network nodes will come up with interfaces and underlay protocols. 
 
@@ -73,7 +74,7 @@ Flags: S static, D dynamic, L discovered by LLDP, B BFD enabled, - disabled, * s
 
 <img width="988" height="817" alt="image" src="https://github.com/user-attachments/assets/8c956f80-c827-42df-b5c7-36ef11bd9eda" />
 
-Configuration to be implemented on leaf's
+Example Configuration to be implemented on leaf's
 ##### Downlink Interface with VLAN 10
 ```
 set / interface ethernet-1/1 subinterface 10 type bridged
@@ -106,6 +107,15 @@ set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target
 set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target export-rt target:100:1
 set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target import-rt target:100:1
 ```
+##### Run below script to deploy L2 evpn relate configuration leaf nodes
+```
+./l2-srl-config-apply.sh
+```
+##### Verify the ping between clients
+```
+./ping-l2-clients.sh 
+```
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/a4c840ad-9de2-43dc-8b48-46e67a5c3db9" />
 
 ## Telemetry stack
 
