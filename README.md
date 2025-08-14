@@ -117,6 +117,26 @@ set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target i
 ```
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/a4c840ad-9de2-43dc-8b48-46e67a5c3db9" />
 
+##### Verify Bridge table
+```
+ssh leaf1
+```
+```
+A:leaf1# show network-instance mac-vrf-1 bridge-table mac-table all
+---------------------------------------------------------------------------------------------------------------------------------------------
+Mac-table of network instance mac-vrf-1
+---------------------------------------------------------------------------------------------------------------------------------------------
++-------------------+------------------------------------+-----------+-----------+--------+-------+------------------------------------+
+|      Address      |            Destination             |   Dest    |   Type    | Active | Aging |            Last Update             |
+|                   |                                    |   Index   |           |        |       |                                    |
++===================+====================================+===========+===========+========+=======+====================================+
+| AA:C1:AB:83:61:AB | vxlan-interface:vxlan0.1           | 693502055 | evpn      | true   | N/A   | 2025-08-14T14:30:06.000Z           |
+|                   | vtep:10.0.1.3 vni:1                | 585       |           |        |       |                                    |
+| AA:C1:AB:AA:8E:18 | ethernet-1/1.10                    | 6         | learnt    | true   | 117   | 2025-08-14T14:30:13.000Z           |
+| AA:C1:AB:E8:16:25 | vxlan-interface:vxlan0.1           | 693502055 | evpn      | true   | N/A   | 2025-08-14T14:41:25.000Z           |
+|                   | vtep:10.0.1.2 vni:1                | 583       |           |        |       |                                    |
++-------------------+------------------------------------+-----------+-----------+--------+-------+------------------------------------+
+```
 ### Configure L3 Service
 
 <img width="950" height="650" alt="image" src="https://github.com/user-attachments/assets/1c393984-d3cd-4a8f-8e9f-cb4b8e6c8707" />
@@ -155,6 +175,11 @@ set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target imp
 ```
 ./l3-srl-config-apply.sh
 ```
+##### Verify the ping between clients
+```
+./ping-l3-clients.sh 
+```
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/a2d0e8df-162b-4e7f-b012-a7133f327c63" />
 
 ##### Verify routing table
 ```
@@ -190,12 +215,6 @@ IPv4 unicast route table of network instance ip-vrf1
 +--------------+------+----------+-------------------+---------+---------+--------+----------+---------+---------+---------+------------+
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ```
-##### Verify the ping between clients
-```
-./ping-l3-clients.sh 
-```
-<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/a2d0e8df-162b-4e7f-b012-a7133f327c63" />
-
 ## Telemetry stack
 
 As the lab name suggests, telemetry is at its core. The following telemetry stack is used in this lab:
