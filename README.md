@@ -241,11 +241,12 @@ Grafana is another key component of this lab as it provides the visualisation fo
 
 Grafana dashboard provided by this repository provides multiple views on the collected real-time data. Powered by [flow plugin](https://grafana.com/grafana/plugins/andrewbmchugh-flow-panel/) it overlays telemetry sourced data over graphics such as topology and front panel views:
 
-![pic3](https://gitlab.com/rdodin/pics/-/wikis/uploads/919092da83782779b960eeb4b893fb4a/image.png)
+<img width="2541" height="1279" alt="image" src="https://github.com/user-attachments/assets/41152287-b960-4cc9-ba05-1dd2ca2a4e77" />
 
 Using the flow plugin and real telemetry data users can create interactive topology maps (aka weathermap) with a visual indication of link rate/utilization.
 
-![pic2](https://gitlab.com/rdodin/pics/-/wikis/uploads/12f154dafca1270f7a1628c1ed3ab77a/image.png)
+<img width="939" height="953" alt="image" src="https://github.com/user-attachments/assets/d8de9c39-104e-4827-9c69-bebbad3683c8" />
+
 
 The panels for the flow plugin has been autocreated by the [clab-io-draw](https://github.com/srl-labs/clab-io-draw) tool
 
@@ -273,6 +274,20 @@ To stop the traffic:
 * `bash traffic.sh stop 1-3` - stop traffic generation between client1 and client3
 
 As a result, the traffic will be generated between the clients and the traffic rate will be reflected on the grafana dashboard.
+
+## Link Failure
+```
+ssh leaf1
+```
+```
+enter candidate
+interface ethernet-1/49 admin-state disable
+commit save
+```
+### Verify on dashboard - Link down && Traffic Flow
+
+<img width="936" height="955" alt="image" src="https://github.com/user-attachments/assets/9d19529d-5960-4c98-a37d-4bcbabe109ea" />
+
 
 ## Logging stack
 
