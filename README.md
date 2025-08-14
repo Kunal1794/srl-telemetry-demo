@@ -4,7 +4,8 @@ This lab represents a small Clos fabric with [Nokia SR Linux](https://learn.srli
 
 ---
 
-![pic1](https://gitlab.com/rdodin/pics/-/wikis/uploads/0784c31d48ec18fd24111ad8d73478b0/image.png)
+<img width="1312" height="966" alt="image" src="https://github.com/user-attachments/assets/88199eb3-dfd6-45d0-ba1f-3e741a463115" />
+
 
 In addition to the telemetry stack, the lab also includes a modern logging stack comprised of [promtail](https://grafana.com/docs/loki/latest/clients/promtail/) and [loki](https://grafana.com/oss/loki/).
 
@@ -41,7 +42,8 @@ docker exec -it client1 bash
 
 The DC fabric used in this lab consists of three leaves and two spines interconnected as shown in the diagram.
 
-![pic](https://gitlab.com/rdodin/pics/-/wikis/uploads/14c768a04fc30e09b0bf5cf0b57b5b63/image.png)
+<img width="941" height="694" alt="image" src="https://github.com/user-attachments/assets/b39f0d62-cc69-4b01-8d39-9a97831ac51f" />
+
 
 Leaves and spines use Nokia SR Linux IXR-D2 and IXR-D3L chassis respectively. Each network element of this topology is equipped with a [startup configuration file](configs/fabric/) that is applied at the node's startup.
 
@@ -68,6 +70,9 @@ Flags: S static, D dynamic, L discovered by LLDP, B BFD enabled, - disabled, * s
 ```
 
 ### Configure L2 Service
+
+<img width="988" height="817" alt="image" src="https://github.com/user-attachments/assets/8c956f80-c827-42df-b5c7-36ef11bd9eda" />
+
 Configuration to be implemented on leaf's
 ##### Downlink Interface with VLAN 10
 ```
