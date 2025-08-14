@@ -42,7 +42,7 @@ docker exec -it client1 bash
 
 The DC fabric used in this lab consists of three leafs and two spines interconnected as shown in the diagram.
 
-<img width="941" height="694" alt="image" src="https://github.com/user-attachments/assets/b39f0d62-cc69-4b01-8d39-9a97831ac51f" />
+<img width="950" height="650" alt="image" src="https://github.com/user-attachments/assets/b39f0d62-cc69-4b01-8d39-9a97831ac51f" />
 
 
 Leaf switches use Nokia SR Linux IXR-D2L chassis, while Spine switches use IXR-D3L chassis. Point-to-point IP links are configured between the Leafs and Spines, running eBGP for underlay route exchange (Loopback addresses). iBGP EVPN is used for overlay route exchange, with the Spines acting as Route Reflectors and the Leafs as RR clients.
@@ -72,9 +72,9 @@ Flags: S static, D dynamic, L discovered by LLDP, B BFD enabled, - disabled, * s
 
 ### Configure L2 Service
 
-<img width="988" height="817" alt="image" src="https://github.com/user-attachments/assets/8c956f80-c827-42df-b5c7-36ef11bd9eda" />
+<img width="950" height="700" alt="image" src="https://github.com/user-attachments/assets/8c956f80-c827-42df-b5c7-36ef11bd9eda" />
 
-Example Configuration to be implemented on leaf's
+Example Configuration to be implemented on leaf's for L2 service
 ##### Downlink Interface with VLAN 10
 ```
 set / interface ethernet-1/1 subinterface 10 type bridged
@@ -107,7 +107,7 @@ set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target
 set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target export-rt target:100:1
 set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target import-rt target:100:1
 ```
-##### Run below script to deploy L2 evpn relate configuration leaf nodes
+##### Run below script to deploy L2 service related configuration on leaf nodes
 ```
 ./l2-srl-config-apply.sh
 ```
@@ -116,6 +116,48 @@ set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target i
 ./ping-l2-clients.sh 
 ```
 <img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/a4c840ad-9de2-43dc-8b48-46e67a5c3db9" />
+
+### Configure L3 Service
+
+<img width="1149" height="768" alt="image" src="https://github.com/user-attachments/assets/1c393984-d3cd-4a8f-8e9f-cb4b8e6c8707" />
+
+Example Configuration to be implemented on leaf's for L3 service
+
+##### Downlink Interface with VLAN 20
+
+set / interface ethernet-1/1 subinterface 20 type routed
+set / interface ethernet-1/1 subinterface 20 admin-state enable
+set / interface ethernet-1/1 subinterface 20 ipv4 admin-state enable
+set / interface ethernet-1/1 subinterface 20 ipv4 address 10.0.0.1/24  ## IP will change for leaf2 and leaf3
+set / interface ethernet-1/1 subinterface 10 vlan encap single-tagged vlan-id 10
+
+##### Tunnel interface [VxLAN VNI]
+set / tunnel-interface vxlan0 vxlan-interface 2 type routed
+set / tunnel-interface vxlan0 vxlan-interface 2 ingress vni 2
+set / tunnel-interface vxlan0 vxlan-interface 2 egress source-ip use-system-ipv4-address
+
+##### IP vrf
+set / network-instance ip-vrf1 type ip-vrf
+set / network-instance ip-vrf1 admin-state enable
+set / network-instance ip-vrf1 description ip-vrf1
+set / network-instance ip-vrf1 interface ethernet-1/1.20
+set / network-instance ip-vrf1 vxlan-interface vxlan0.2
+set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 vxlan-interface vxlan0.2
+set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 evi 2
+set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 ecmp 8
+set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 routes route-table mac-ip advertise-gateway-mac true
+set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target export-rt target:101:1
+set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target import-rt target:101:1
+
+##### Run below script to deploy L2 service related configuration on leaf nodes
+```
+./l3-srl-config-apply.sh
+```
+##### Verify the ping between clients
+```
+./ping-l3-clients.sh 
+```
+<img width="500" height="500" alt="image" src="https://github.com/user-attachments/assets/a2d0e8df-162b-4e7f-b012-a7133f327c63" />
 
 ## Telemetry stack
 
