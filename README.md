@@ -119,24 +119,26 @@ set / network-instance mac-vrf-1 protocols bgp-vpn bgp-instance 1 route-target i
 
 ### Configure L3 Service
 
-<img width="1149" height="768" alt="image" src="https://github.com/user-attachments/assets/1c393984-d3cd-4a8f-8e9f-cb4b8e6c8707" />
+<img width="950" height="650" alt="image" src="https://github.com/user-attachments/assets/1c393984-d3cd-4a8f-8e9f-cb4b8e6c8707" />
 
 Example Configuration to be implemented on leaf's for L3 service
 
 ##### Downlink Interface with VLAN 20
-
+```
 set / interface ethernet-1/1 subinterface 20 type routed
 set / interface ethernet-1/1 subinterface 20 admin-state enable
 set / interface ethernet-1/1 subinterface 20 ipv4 admin-state enable
 set / interface ethernet-1/1 subinterface 20 ipv4 address 10.0.0.1/24  ## IP will change for leaf2 and leaf3
 set / interface ethernet-1/1 subinterface 10 vlan encap single-tagged vlan-id 10
-
+```
 ##### Tunnel interface [VxLAN VNI]
+```
 set / tunnel-interface vxlan0 vxlan-interface 2 type routed
 set / tunnel-interface vxlan0 vxlan-interface 2 ingress vni 2
 set / tunnel-interface vxlan0 vxlan-interface 2 egress source-ip use-system-ipv4-address
-
+```
 ##### IP vrf
+```
 set / network-instance ip-vrf1 type ip-vrf
 set / network-instance ip-vrf1 admin-state enable
 set / network-instance ip-vrf1 description ip-vrf1
@@ -148,7 +150,7 @@ set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 ecmp 8
 set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 routes route-table mac-ip advertise-gateway-mac true
 set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target export-rt target:101:1
 set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target import-rt target:101:1
-
+```
 ##### Run below script to deploy L2 service related configuration on leaf nodes
 ```
 ./l3-srl-config-apply.sh
