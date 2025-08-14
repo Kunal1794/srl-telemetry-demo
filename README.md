@@ -151,9 +151,44 @@ set / network-instance ip-vrf1 protocols bgp-evpn bgp-instance 1 routes route-ta
 set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target export-rt target:101:1
 set / network-instance ip-vrf1 protocols bgp-vpn bgp-instance 1 route-target import-rt target:101:1
 ```
-##### Run below script to deploy L2 service related configuration on leaf nodes
+##### Run below script to deploy L3 service related configuration on leaf nodes
 ```
 ./l3-srl-config-apply.sh
+```
+
+##### Verify routing table
+```
+ssh leaf1
+```
+```
+A:leaf1# show network-instance ip-vrf1 route-table
+---------------------------------------------------------------------------------------------------------------------------------------------
+IPv4 unicast route table of network instance ip-vrf1
+---------------------------------------------------------------------------------------------------------------------------------------------
++--------------+------+----------+-------------------+---------+---------+--------+----------+---------+---------+---------+------------+
+|    Prefix    |  ID  |  Route   |    Route Owner    | Active  | Origin  | Metric |   Pref   |  Next-  |  Next-  | Backup  |   Backup   |
+|              |      |   Type   |                   |         | Network |        |          |   hop   | hop Int |  Next-  |  Next-hop  |
+|              |      |          |                   |         | Instanc |        |          | (Type)  | erface  |   hop   | Interface  |
+|              |      |          |                   |         |    e    |        |          |         |         | (Type)  |            |
++==============+======+==========+===================+=========+=========+========+==========+=========+=========+=========+============+
+| 10.1.1.0/24  | 7    | local    | net_inst_mgr      | True    | ip-vrf1 | 0      | 0        | 10.1.1. | etherne |         |            |
+|              |      |          |                   |         |         |        |          | 254 (di | t-      |         |            |
+|              |      |          |                   |         |         |        |          | rect)   | 1/1.11  |         |            |
+| 10.1.1.254/3 | 7    | host     | net_inst_mgr      | True    | ip-vrf1 | 0      | 0        | None (e | None    |         |            |
+| 2            |      |          |                   |         |         |        |          | xtract) |         |         |            |
+| 10.1.1.255/3 | 7    | host     | net_inst_mgr      | True    | ip-vrf1 | 0      | 0        | None (b |         |         |            |
+| 2            |      |          |                   |         |         |        |          | roadcas |         |         |            |
+|              |      |          |                   |         |         |        |          | t)      |         |         |            |
+| 10.2.2.0/24  | 0    | bgp-evpn | bgp_evpn_mgr      | True    | ip-vrf1 | 0      | 170      | 10.0.1. |         |         |            |
+|              |      |          |                   |         |         |        |          | 2/32 (i |         |         |            |
+|              |      |          |                   |         |         |        |          | ndirect |         |         |            |
+|              |      |          |                   |         |         |        |          | /vxlan) |         |         |            |
+| 10.3.3.0/24  | 0    | bgp-evpn | bgp_evpn_mgr      | True    | ip-vrf1 | 0      | 170      | 10.0.1. |         |         |            |
+|              |      |          |                   |         |         |        |          | 3/32 (i |         |         |            |
+|              |      |          |                   |         |         |        |          | ndirect |         |         |            |
+|              |      |          |                   |         |         |        |          | /vxlan) |         |         |            |
++--------------+------+----------+-------------------+---------+---------+--------+----------+---------+---------+---------+------------+
+---------------------------------------------------------------------------------------------------------------------------------------------
 ```
 ##### Verify the ping between clients
 ```
