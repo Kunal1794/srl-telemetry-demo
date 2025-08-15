@@ -149,7 +149,7 @@ set / interface ethernet-1/1 subinterface 20 type routed
 set / interface ethernet-1/1 subinterface 20 admin-state enable
 set / interface ethernet-1/1 subinterface 20 ipv4 admin-state enable
 set / interface ethernet-1/1 subinterface 20 ipv4 address 10.1.1.254/24  ## IP will change for leaf2 and leaf3
-set / interface ethernet-1/1 subinterface 10 vlan encap single-tagged vlan-id 10
+set / interface ethernet-1/1 subinterface 20 vlan encap single-tagged vlan-id 20
 ```
 ##### Tunnel interface [VxLAN VNI]
 ```
